@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "../utils/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { BlogpostCard } from "@/components/general/BlogpostCard";
+import { redirect } from "next/navigation";
 
 async function getData(userId: string) {
   const data = await prisma.blogPost.findMany({
@@ -23,7 +24,9 @@ export default async function Dashboard() {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
-  const data = await getData(user?.id);
+  if (!user || !user.id) redirect("/dashboard");
+
+  const data = await getData(user.id);
 
   return (
     <div>
